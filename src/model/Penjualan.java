@@ -159,6 +159,44 @@ public class Penjualan {
         return null;
     }
     
+    public ArrayList<Penjualan> read(String keywords){
+        ArrayList<Penjualan> list = new ArrayList<>();
+        
+        String selectSQL = "SELECT J.*, G.namalengkap FROM penjualan J INNER JOIN pengguna G ON J.idpengguna = G.id WHERE status=?" ;
+        
+        this.database = new Database();
+        this.connection = this.database.getConnection();
+        
+        try{
+            PreparedStatement preparedStatement = this.connection.prepareStatement(selectSQL);
+            preparedStatement.setString(1, keywords);
+            ResultSet rs = preparedStatement.executeQuery();
+            
+            while(rs.next()){
+                Penjualan j = new Penjualan();
+                
+                j.setId(rs.getInt("id"));
+                j.setTanggal(rs.getString("tanggal"));
+                j.setStatus(rs.getString("status"));
+                
+                Pengguna g = new Pengguna();
+                g.setId(rs.getInt("idpengguna"));
+                g.setNamaLengkap(rs.getString("namalengkap"));
+                
+                j.setPengguna(g);
+                
+                list.add(j);
+            }
+            
+            return list;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Penjualan.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
+    }
+    
     public ArrayList<Penjualan> search(String keywords){
         keywords = "%" + keywords + "%";
         ArrayList<Penjualan> list = new ArrayList<>();

@@ -92,6 +92,8 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="tfStatus" min="-2" pref="71" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="tfId" min="-2" pref="71" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="tfAmbilid" min="-2" pref="71" max="-2" attributes="0"/>
@@ -123,6 +125,7 @@
                       <Component id="tfIdPenjualan" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tfIdBarang" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tfId" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfStatus" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -385,6 +388,8 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfStatus">
     </Component>
   </SubComponents>
 </Form>

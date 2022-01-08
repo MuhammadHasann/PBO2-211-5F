@@ -4,6 +4,7 @@ import db.Database;
 import model.Barang;
 import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -13,6 +14,8 @@ import model.Penjualan;
 import model.PenjualanDetail;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import libs.Pref;
 import model.Pengguna;
 
@@ -138,6 +141,7 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
         tfIdPenjualan = new javax.swing.JTextField();
         tfIdBarang = new javax.swing.JTextField();
         tfId = new javax.swing.JTextField();
+        tfStatus = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -334,6 +338,8 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(tfStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(tfAmbilid, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -359,7 +365,8 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
                         .addComponent(tfAmbilid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(tfIdPenjualan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(tfIdBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tfStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel10))
                 .addGap(9, 9, 9)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -391,15 +398,32 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         Penjualan penjualan = new Penjualan();
-        JOptionPane.showMessageDialog(null, "Berhasil");
-        int pilihan = JOptionPane.showConfirmDialog(null,
-                "Anda ingin mencetak penjualan?",
-                "Konfirmasi Cetak",
-                JOptionPane.YES_NO_OPTION);
+        Pref pref = new Pref();
+        Pengguna pengguna = pref.ambil();
+        pengguna.getNamaLengkap();
 
-            if(pilihan == 0){
+        penjualan.setId(Integer.parseInt(tfIdPenjualan.getText()));
+        penjualan.setTanggal(tanggal());
+        penjualan.setPengguna(pengguna);
+        
+        int pilihan = JOptionPane.showConfirmDialog(null, "Apakah transaksinya sudah selesai?", "Konfirmasi Transaksi",JOptionPane.YES_NO_OPTION);
+        if (pilihan == 0) {
+            tfStatus.setText("SELESAI");
+            penjualan.setStatus(tfStatus.getText());
+            penjualan.update();
+            JOptionPane.showMessageDialog(null, "Transaksi Berhasil");
+
+            int pilihan1 = JOptionPane.showConfirmDialog(null, "Anda ingin mencetak penjualan?", "Konfirmasi Cetak", JOptionPane.YES_NO_OPTION);
+
+            if(pilihan1 == 0){
                 penjualan.tampilLaporan("src/laporan/LapPenjualan.jrxml", "SELECT D.*, P.*, B.namabarang FROM detailpenjualan D INNER JOIN penjualan P ON D.idpenjualan = p.id INNER JOIN barang B ON D.idbarang = b.id WHERE D.idpenjualan='"+tfIdPenjualan.getText()+"'");
             }
+        } else {
+            tfStatus.setText("PENDING");
+            penjualan.setStatus(tfStatus.getText());
+            penjualan.update();
+            JOptionPane.showMessageDialog(null, "Transaksi Pending");
+        }       
         dispose();   
     }//GEN-LAST:event_btnSimpanActionPerformed
 
@@ -448,6 +472,7 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
         tfIdPenjualan.hide();
         tfIdBarang.hide();
         tfId.hide();
+        tfStatus.hide();
         btnHapus.setEnabled(false);
     }//GEN-LAST:event_formWindowActivated
 
@@ -496,19 +521,69 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
         penjualan.setId(Integer.parseInt(tfIdPenjualan.getText()));
         penjualan.setTanggal(tanggal());
         penjualan.setPengguna(pengguna);
-        penjualan.setStatus("SELESAI");
-        penjualan.create();
+        penjualan.setStatus("PENDING");
+//        penjualan.create();
+//        
+//        pd.create();
+//        String keywords = tfIdPenjualan.getText();
+//        PenjualanDetail penjualanDetail = new PenjualanDetail();
+//        ArrayList<PenjualanDetail> list1 = penjualanDetail.read(keywords);
+//        tampilkanDataPenjualanDetail(list1);
+//        JOptionPane.showMessageDialog(null, "Berhasil");
+//        bersih();
+//        
+//        int idPenjualan =  Integer.parseInt(tfIdPenjualan.getText()) + 1;
+//        penjualan.delete(idPenjualan);
+
+        Database db = new Database();
+
+        try {
+            String query = "select id from penjualan where id = '"+tfIdPenjualan.getText()+"'";
+            Statement st = db.getConnection().createStatement();
+
+            ResultSet rs = st.executeQuery(query);
+            
+            if (!rs.next()) {
+                penjualan.create();
+                pd.create();
+                JOptionPane.showMessageDialog(null, "Berhasil");
+                bersih();
+
+            } else {
+                pd.create();
+                JOptionPane.showMessageDialog(null, "Berhasil masukkan ke keranjang");
+                bersih();
+            }
+            String keywords = tfIdPenjualan.getText();
+            PenjualanDetail penjualanDetail = new PenjualanDetail();
+            ArrayList<PenjualanDetail> list1 = penjualanDetail.read(keywords);
+            tampilkanDataPenjualanDetail(list1);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR1: " + e.getMessage());
+        }
+
+//        String idPenjualan =  tfIdPenjualan.getText() + 1;
+//        
+//        Database db = new Database();
+//
+//        try {
+//            String query = "select id from penjualan where id = '"+idPenjualan+"'";
+//            Statement st = db.getConnection().createStatement();
+//
+//            ResultSet rs = st.executeQuery(query);
+//            
+//               if (!rs.next()) {
+//                    System.out.println("data ada");
+//                    
+//                }else {
+//                    System.out.println("data tidak ada = "+rs.getString("id"));
+//                } 
+//            
+//        } catch (Exception e) {
+//            System.out.println("ERROR1: " + e.getMessage());
+//        }
         
-        pd.create();
-        String keywords = tfIdPenjualan.getText();
-        PenjualanDetail penjualanDetail = new PenjualanDetail();
-        ArrayList<PenjualanDetail> list1 = penjualanDetail.read(keywords);
-        tampilkanDataPenjualanDetail(list1);
-        JOptionPane.showMessageDialog(null, "Berhasil");
-        bersih();
-        
-        int idPenjualan =  Integer.parseInt(tfIdPenjualan.getText()) + 1;
-        penjualan.delete(idPenjualan);
     }//GEN-LAST:event_btnTambahActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
@@ -608,5 +683,6 @@ public class PenjualanAddFrame extends javax.swing.JFrame {
     private javax.swing.JTextField tfJumlah;
     private javax.swing.JTextField tfNamaBarang;
     private javax.swing.JTextField tfQty;
+    private javax.swing.JTextField tfStatus;
     // End of variables declaration//GEN-END:variables
 }

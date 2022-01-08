@@ -7,9 +7,6 @@ import model.JenisBarang;
 
 public class LaporanPerJenisBarangFrame extends javax.swing.JFrame {
 
-    /**
-     * Creates new form LaporanPerJenisBarangFrame
-     */
     public LaporanPerJenisBarangFrame() {
         initComponents();
         setLocationRelativeTo(null);

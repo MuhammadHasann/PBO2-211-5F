@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pengguna {
     private int id;
@@ -81,9 +83,27 @@ public class Pengguna {
             return true;
         }
             
-    } catch (SQLException ex) {
-        System.out.println(ex.toString());
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+        }
+        return false;
     }
+    
+    public boolean update(){
+        String updateSQL = "UPDATE pengguna SET password = MD5(?) WHERE id = ?";
+        
+        this.database = new Database();
+        this.connection = this.database.getConnection();
+        
+        try {
+            PreparedStatement preparedStatement = this.connection.prepareStatement(updateSQL);
+            preparedStatement.setString(1, this.password);
+            preparedStatement.setInt(2, this.id);
+            preparedStatement.execute();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(Pengguna.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return false;
     }
 }
